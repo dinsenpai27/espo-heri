@@ -1,4 +1,4 @@
-import { Image, ScrollView, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 export default function Index() {
   return (
@@ -11,12 +11,12 @@ export default function Index() {
         padding: 20,
       }}
     >
-      <ScrollView contentContainerStyle={{
+      {/* <ScrollView contentContainerStyle={{
         flexGrow: 1,
         justifyContent: "center",
         alignItems: "center",
         padding: 20,
-      }}>
+      }}> */}
 
       {/* Segitiga */}
       <View
@@ -91,12 +91,12 @@ export default function Index() {
       </View>
 
 
-      <View style={{
+      {/* <View style={{
         flexDirection: "row", // Menambahkan flexDirection untuk mengatur tata letak horizonta tidak meman
 
-      }}>
+      }}> */}
 
-      {/* Gambar Profil */}
+      {/* Gambar Profil
       <Image style={{
         width: 200,
         height: 200,
@@ -121,8 +121,14 @@ export default function Index() {
         }}></Image>
       </View>
 
+      <View style={{
+        flexDirection: "row", 
+        // Menambahkan flexDirection untuk mengatur tata letak horizontal
+      }}>
+        </View>
 
-       </ScrollView>
+
+       </ScrollView> */}
     </View>
   );
 }
