@@ -11,13 +11,6 @@ export default function Index() {
         padding: 20,
       }}
     >
-      {/* <ScrollView contentContainerStyle={{
-        flexGrow: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 20,
-      }}> */}
-
       {/* Segitiga */}
       <View
         style={{
@@ -31,7 +24,6 @@ export default function Index() {
           borderBottomColor: "#4B7BE5",
           marginBottom: 40,
           opacity: 0.3,
-          
         }}
       />
 
@@ -43,8 +35,8 @@ export default function Index() {
           paddingHorizontal: 60,
           borderRadius: 15,
           marginBottom: 40,
-          elevation: 5, // Android shadow
-          shadowColor: "#000", // iOS shadow
+          elevation: 5,
+          shadowColor: "#000",
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.3,
           shadowRadius: 4,
@@ -66,9 +58,9 @@ export default function Index() {
       <View
         style={{
           backgroundColor: "#3A4750",
-          width: 260,
-          height: 70,
-          borderRadius: 35,
+          width: "100%",
+          minHeight: 70,
+          borderRadius: 55,
           justifyContent: "center",
           alignItems: "center",
           elevation: 5,
@@ -76,6 +68,7 @@ export default function Index() {
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.3,
           shadowRadius: 4,
+          paddingHorizontal: 20,
         }}
       >
         <Text
@@ -85,50 +78,12 @@ export default function Index() {
             color: "#FFFFFF",
             letterSpacing: 1,
           }}
+          numberOfLines={1}
+          adjustsFontSizeToFit={true}
         >
           105841109322
         </Text>
       </View>
-
-
-      {/* <View style={{
-        flexDirection: "row", // Menambahkan flexDirection untuk mengatur tata letak horizonta tidak meman
-
-      }}> */}
-
-      {/* Gambar Profil
-      <Image style={{
-        width: 200,
-        height: 200,
-        marginTop: 20, // margin atas untuk memberi jarak
-      }}
-        source={{ 
-        uri: "https://simak.unismuh.ac.id/upload/mahasiswa/105841109322.jpg",
-
-        }}>
-        
-  
-      </Image>
-
-            <Image style={{
-        width: 200,
-        height: 200,
-        marginTop: 20, // margin atas untuk memberi jarak
-      }}
-        source={{ 
-        uri: "https://uploads-us-west-2.insided.com/figma-en/attachment/7105e9c010b3d1f0ea893ed5ca3bd58e6cec090e.gif",
-
-        }}></Image>
-      </View>
-
-      <View style={{
-        flexDirection: "row", 
-        // Menambahkan flexDirection untuk mengatur tata letak horizontal
-      }}>
-        </View>
-
-
-       </ScrollView> */}
     </View>
   );
 }
