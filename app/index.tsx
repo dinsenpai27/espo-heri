@@ -86,12 +86,13 @@ export default function App() {
     );
   };
 
-  const renderItem = ({ item, index }: { item: GridItem; index: number }) => (
-    <TouchableOpacity
-      style={styles.item}
-      onPress={() => handlePress(index)}
-      activeOpacity={0.8}
-    >
+const renderItem = ({ item, index }: { item: GridItem; index: number }) => (
+  <TouchableOpacity
+    style={styles.item}
+    onPress={() => handlePress(index)}
+    activeOpacity={0.8}
+  >
+    <View style={styles.imageWrapper}>
       <Image
         source={item.gambar}
         style={[
@@ -102,8 +103,11 @@ export default function App() {
         ]}
         resizeMode="contain"
       />
-    </TouchableOpacity>
-  );
+    </View>
+  </TouchableOpacity>
+);
+
+
 
   return (
     <View style={styles.container}>
@@ -129,6 +133,13 @@ const styles = StyleSheet.create({
   },
   item: {
     margin: 5,
+  },
+  imageWrapper: {
+    borderWidth: 4,
+    borderColor: "#ff69b4",
+    borderRadius: 14,
+    backgroundColor: "#333",
+    padding: 2,
   },
   image: {
     width: imageWidth,
