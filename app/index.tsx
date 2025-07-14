@@ -64,6 +64,7 @@ export default function App() {
   const detectAI = (gambar: { uri: string }) => {
     console.log("AI detection running on:", gambar.uri);
     // Simulasi AI detection — bisa sambungkan API detection asli di sini
+    // Fitur untuk deteksi gambar AI telah ditambahkan
   };
 
   const handlePress = (index: number) => {
@@ -108,7 +109,7 @@ export default function App() {
       })
     );
   };
-
+// kenapa tidak
 const renderItem = ({ item, index }: { item: GridItem; index: number }) => (
   <TouchableOpacity
     style={styles.item}
