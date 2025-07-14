@@ -9,16 +9,16 @@ import {
   View,
 } from "react-native";
 
-// Atur jumlah kolom dan ukuran gambar
-const kolomGrid = 3;
+// Konfigurasi grid dan ukuran gambar
+const jumlahKolom = 3;
 const lebarLayar = Dimensions.get("window").width;
-const lebarGambar = (lebarLayar / kolomGrid) - 20;
-const rasioGambar = 925 / 1440;
-const tinggiGambar = lebarGambar / rasioGambar;
+const lebarItem = (lebarLayar / jumlahKolom) - 20;
+const rasioUkuran = 925 / 1440;
+const tinggiItem = lebarItem / rasioUkuran;
 
-export default function GaleriApp() {
-  // Data gambar utama
-  const daftarGambar = [
+export default function GaleriInteraktif() {
+  // Gambar utama
+  const gambarUtama = [
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2024/10/bg_Nakiri-Ayame_01-925x1440.png" },
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/06/bg_Sakura-Miko_01-925x1440.png" },
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/06/bg_Shirogane-Noel_01-925x1440.png" },
@@ -30,56 +30,55 @@ export default function GaleriApp() {
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2024/06/bg_Kureiji-Ollie_01-925x1440.png" },
   ];
 
-  // Data gambar alternatif
-  const daftarAlternatif = [
+  // Gambar alternatif (jumlah harus sama)
+  const gambarAlternatif = [
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Moona-Hoshinova_01-925x1440.png" },
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Vestia-Zeta_01-925x1440.png" },
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/talent_name_JP_Anya-Melfissa.png" },
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Kobo-Kanaeru_01-925x1440.png" },
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Ninomae-Inanis_01.png" },
-    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2024/10/bg_Nakiri-Ayame_01-925x1440.png" },
-    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/06/bg_Sakura-Miko_01-925x1440.png" },
-    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/06/bg_Yukihana-Lamy_01-925x1440.png" },
-    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2024/06/bg_Omaru-Polka_01-925x1440.png" },
+    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Tokoyami-Towa_01-925x1440.png" },
+    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/06/bg_Hoshimachi-Suisei_01-925x1440.png" },
+    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Azki_01-925x1440.png" },
+    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Uruha-Rushia_01-925x1440.png" },
   ];
 
-  // Struktur awal data grid
-  const dataAwal = daftarGambar.map((gambarUtama, idx) => ({
-    kode: idx,
-    utama: gambarUtama,
-    cadangan: daftarAlternatif[idx],
+  // Buat data awal grid
+  const dataAwal = gambarUtama.map((gambar, i) => ({
+    id: i,
+    utama: gambar,
+    alternatif: gambarAlternatif[i],
     aktif: false,
-    ukuran: 1,
+    skala: 1,
   }));
 
-  // Tipe data item grid
-  type DataItem = {
-    kode: number;
+  type ItemGaleri = {
+    id: number;
     utama: { uri: string };
-    cadangan: { uri: string };
+    alternatif: { uri: string };
     aktif: boolean;
-    ukuran: number;
+    skala: number;
   };
 
-  const [dataGaleri, setDataGaleri] = useState<DataItem[]>(dataAwal);
+  const [dataGaleri, setDataGaleri] = useState<ItemGaleri[]>(dataAwal);
 
-  // Fungsi deteksi AI simulasi
-  const deteksiGambar = (gambar: { uri: string }) => {
-    console.log("Deteksi AI: ", gambar.uri);
+  // Fungsi simulasi AI detection
+  const deteksiAI = (gambar: { uri: string }) => {
+    console.log("Mendeteksi gambar: ", gambar.uri);
   };
 
-  // Fungsi klik gambar
-  const saatDitekan = (index: number) => {
-    setDataGaleri((dataLama) =>
-      dataLama.map((item, idx) => {
-        if (idx === index) {
-          const ukuranBaru = Math.min(item.ukuran * 1.2, 2);
-          const statusBaru = !item.aktif;
-          deteksiGambar(statusBaru ? item.cadangan : item.utama);
+  // Saat gambar ditekan
+  const tekanGambar = (index: number) => {
+    setDataGaleri((lama) =>
+      lama.map((item, i) => {
+        if (i === index) {
+          const skalaBaru = Math.min(item.skala * 1.2, 2);
+          const aktifBaru = !item.aktif;
+          deteksiAI(aktifBaru ? item.alternatif : item.utama);
           return {
             ...item,
-            aktif: statusBaru,
-            ukuran: ukuranBaru,
+            aktif: aktifBaru,
+            skala: skalaBaru,
           };
         }
         return item;
@@ -87,20 +86,20 @@ export default function GaleriApp() {
     );
   };
 
-  // Tampilkan setiap item
-  const tampilkanItem = ({ item, index }: { item: DataItem; index: number }) => (
+  // Tampilkan item grid
+  const renderGaleri = ({ item, index }: { item: ItemGaleri; index: number }) => (
     <TouchableOpacity
-      style={styles.kartu}
-      onPress={() => saatDitekan(index)}
+      style={styles.item}
+      onPress={() => tekanGambar(index)}
       activeOpacity={0.85}
     >
-      <View style={styles.pembungkusGambar}>
+      <View style={styles.frame}>
         <Image
-          source={item.aktif ? item.cadangan : item.utama}
+          source={item.aktif ? item.alternatif : item.utama}
           style={[
             styles.gambar,
             {
-              transform: [{ scale: item.ukuran }],
+              transform: [{ scale: item.skala }],
             },
           ]}
           resizeMode="contain"
@@ -109,34 +108,32 @@ export default function GaleriApp() {
     </TouchableOpacity>
   );
 
-  // Komponen utama
   return (
     <View style={styles.layar}>
       <FlatList
         data={dataGaleri}
-        renderItem={tampilkanItem}
-        keyExtractor={(item) => item.kode.toString()}
-        numColumns={kolomGrid}
+        renderItem={renderGaleri}
+        keyExtractor={(item) => item.id.toString()}
+        numColumns={jumlahKolom}
         showsVerticalScrollIndicator={false}
       />
       <Text style={styles.keterangan}>
-        Ketuk gambar → ganti alternatif + deteksi AI + perbesar
+        Klik gambar → ganti versi + AI detect + perbesar max 2x
       </Text>
     </View>
   );
 }
 
-// Style komponen
 const styles = StyleSheet.create({
   layar: {
     flex: 1,
     padding: 10,
     backgroundColor: "#1e1e1e",
   },
-  kartu: {
+  item: {
     margin: 5,
   },
-  pembungkusGambar: {
+  frame: {
     borderWidth: 4,
     borderColor: "#ff69b4",
     borderRadius: 14,
@@ -144,8 +141,8 @@ const styles = StyleSheet.create({
     padding: 2,
   },
   gambar: {
-    width: lebarGambar,
-    height: tinggiGambar,
+    width: lebarItem,
+    height: tinggiItem,
     borderRadius: 12,
   },
   keterangan: {
