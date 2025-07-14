@@ -9,16 +9,16 @@ import {
   View,
 } from "react-native";
 
-// Define grid size and screen width before using them
-const gridSize = 3; // Number of columns in the grid
-const screenWidth = Dimensions.get("window").width;
-const imageWidth = (screenWidth / gridSize) - 20;
-const aspectRatio = 925 / 1440;
-const imageHeight = imageWidth / aspectRatio;
+// Atur jumlah kolom dan ukuran gambar
+const kolomGrid = 3;
+const lebarLayar = Dimensions.get("window").width;
+const lebarGambar = (lebarLayar / kolomGrid) - 20;
+const rasioGambar = 925 / 1440;
+const tinggiGambar = lebarGambar / rasioGambar;
 
-export default function App() {
-  // 9 gambar utama
-  const gambar = [
+export default function GaleriApp() {
+  // Data gambar utama
+  const daftarGambar = [
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2024/10/bg_Nakiri-Ayame_01-925x1440.png" },
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/06/bg_Sakura-Miko_01-925x1440.png" },
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/06/bg_Shirogane-Noel_01-925x1440.png" },
@@ -30,8 +30,8 @@ export default function App() {
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2024/06/bg_Kureiji-Ollie_01-925x1440.png" },
   ];
 
-  // 9 gambar alternatif
-  const altgambar = [
+  // Data gambar alternatif
+  const daftarAlternatif = [
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Moona-Hoshinova_01-925x1440.png" },
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Vestia-Zeta_01-925x1440.png" },
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/talent_name_JP_Anya-Melfissa.png" },
@@ -43,49 +43,43 @@ export default function App() {
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2024/06/bg_Omaru-Polka_01-925x1440.png" },
   ];
 
-  const initialData = gambar.map((gbr, index) => ({
-    id: index,
-    gambar: gbr,
-    altgambar: altgambar[index],
-    toggled: false,
-    scale: 1,
+  // Struktur awal data grid
+  const dataAwal = daftarGambar.map((gambarUtama, idx) => ({
+    kode: idx,
+    utama: gambarUtama,
+    cadangan: daftarAlternatif[idx],
+    aktif: false,
+    ukuran: 1,
   }));
 
-  type GridItem = {
-    id: number;
-    gambar: { uri: string };
-    altgambar: { uri: string };
-    toggled: boolean;
-    scale: number;
+  // Tipe data item grid
+  type DataItem = {
+    kode: number;
+    utama: { uri: string };
+    cadangan: { uri: string };
+    aktif: boolean;
+    ukuran: number;
   };
 
-  const [gridData, setGridData] = useState<GridItem[]>(initialData);
+  const [dataGaleri, setDataGaleri] = useState<DataItem[]>(dataAwal);
 
-  const detectAI = (gambar: { uri: string }) => {
-    console.log("AI detection running on:", gambar.uri);
-    // Simulasi AI detection — bisa sambungkan API detection asli di sini
-    // Fitur untuk deteksi gambar AI telah ditambahkan
+  // Fungsi deteksi AI simulasi
+  const deteksiGambar = (gambar: { uri: string }) => {
+    console.log("Deteksi AI: ", gambar.uri);
   };
 
-  const handlePress = (index: number) => {
-    setGridData((prevData) =>
-      prevData.map((item, idx) => {
+  // Fungsi klik gambar
+  const saatDitekan = (index: number) => {
+    setDataGaleri((dataLama) =>
+      dataLama.map((item, idx) => {
         if (idx === index) {
-          // Penskalaan gambar sebesar 1.2x saat diklik dengan pembatasan maksimum 2x
-          const newScale = Math.min(item.scale * 1.2, 2);
-          
-          // Penggantian gambar dengan versi alternatif
-          const toggled = !item.toggled;
-          const newGambar = toggled ? item.altgambar : item.gambar;
-          
-          // Jalankan AI detection
-          detectAI(newGambar);
-          
+          const ukuranBaru = Math.min(item.ukuran * 1.2, 2);
+          const statusBaru = !item.aktif;
+          deteksiGambar(statusBaru ? item.cadangan : item.utama);
           return {
             ...item,
-            toggled,
-            scale: newScale,
-            gambar: newGambar,
+            aktif: statusBaru,
+            ukuran: ukuranBaru,
           };
         }
         return item;
@@ -93,106 +87,68 @@ export default function App() {
     );
   };
 
-  // Fungsi untuk reset gambar individual (long press)
-  const resetItem = (index: number) => {
-    setGridData((prevData) =>
-      prevData.map((item, idx) => {
-        if (idx === index) {
-          return {
-            ...item,
-            toggled: false,
-            scale: 1,
-            gambar: gambar[index], // Kembali ke gambar asli
-          };
-        }
-        return item;
-      })
-    );
-  };
-// kenapa tidak
-const renderItem = ({ item, index }: { item: GridItem; index: number }) => (
-  <TouchableOpacity
-    style={styles.item}
-    onPress={() => handlePress(index)}
-    onLongPress={() => resetItem(index)} // Long press untuk reset
-    activeOpacity={0.8}
-  >
-    <View style={[
-      styles.imageWrapper,
-      { 
-        borderColor: item.toggled ? "#ff69b4" : "#666", // Border berubah warna saat toggled
-        transform: [{ scale: item.scale }], // Scale wrapper, bukan hanya image
-      }
-    ]}>
-      <Image
-        source={item.gambar}
-        style={styles.image}
-        resizeMode="contain"
-      />
-      {/* Indicator skala */}
-      <View style={styles.scaleIndicator}>
-        <Text style={styles.scaleText}>{item.scale.toFixed(1)}x</Text>
+  // Tampilkan setiap item
+  const tampilkanItem = ({ item, index }: { item: DataItem; index: number }) => (
+    <TouchableOpacity
+      style={styles.kartu}
+      onPress={() => saatDitekan(index)}
+      activeOpacity={0.85}
+    >
+      <View style={styles.pembungkusGambar}>
+        <Image
+          source={item.aktif ? item.cadangan : item.utama}
+          style={[
+            styles.gambar,
+            {
+              transform: [{ scale: item.ukuran }],
+            },
+          ]}
+          resizeMode="contain"
+        />
       </View>
-    </View>
-  </TouchableOpacity>
-);
+    </TouchableOpacity>
+  );
 
-
-
+  // Komponen utama
   return (
-    <View style={styles.container}>
+    <View style={styles.layar}>
       <FlatList
-        data={gridData}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
-        numColumns={gridSize}
+        data={dataGaleri}
+        renderItem={tampilkanItem}
+        keyExtractor={(item) => item.kode.toString()}
+        numColumns={kolomGrid}
         showsVerticalScrollIndicator={false}
       />
-      <Text style={styles.note}>
-        Tap: ganti gambar + perbesar 1.2x (max 2x) + AI detection{'\n'}
-        Long press: reset gambar & skala
+      <Text style={styles.keterangan}>
+        Ketuk gambar → ganti alternatif + deteksi AI + perbesar
       </Text>
     </View>
   );
 }
 
+// Style komponen
 const styles = StyleSheet.create({
-  container: {
+  layar: {
     flex: 1,
     padding: 10,
     backgroundColor: "#1e1e1e",
   },
-  item: {
+  kartu: {
     margin: 5,
   },
-  imageWrapper: {
+  pembungkusGambar: {
     borderWidth: 4,
     borderColor: "#ff69b4",
     borderRadius: 14,
     backgroundColor: "#333",
     padding: 2,
-    position: "relative",
   },
-  image: {
-    width: imageWidth,
-    height: imageHeight,
+  gambar: {
+    width: lebarGambar,
+    height: tinggiGambar,
     borderRadius: 12,
   },
-  scaleIndicator: {
-    position: "absolute",
-    top: 5,
-    right: 5,
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 8,
-  },
-  scaleText: {
-    color: "#fff",
-    fontSize: 10,
-    fontWeight: "bold",
-  },
-  note: {
+  keterangan: {
     color: "#ccc",
     textAlign: "center",
     padding: 10,
