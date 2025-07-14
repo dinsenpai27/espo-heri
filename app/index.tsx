@@ -1,89 +1,144 @@
-import { Text, View } from "react-native";
+import React, { useState } from "react";
+import {
+  Dimensions,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
-export default function Index() {
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#f0f0f5",
-        padding: 20,
-      }}
+// Define grid size and screen width before using them
+const gridSize = 3; // Number of columns in the grid
+const screenWidth = Dimensions.get("window").width;
+const imageWidth = (screenWidth / gridSize) - 20;
+const aspectRatio = 925 / 1440;
+const imageHeight = imageWidth / aspectRatio;
+
+export default function App() {
+  // 9 gambar utama
+  const gambar = [
+    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2024/10/bg_Nakiri-Ayame_01-925x1440.png" },
+    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/06/bg_Sakura-Miko_01-925x1440.png" },
+    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/06/bg_Shirogane-Noel_01-925x1440.png" },
+    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/06/bg_Amane-Kanata_01-925x1440.png" },
+    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/06/bg_Yukihana-Lamy_01-925x1440.png" },
+    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2024/06/bg_Omaru-Polka_01-925x1440.png" },
+    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Sakamata-Chloe_01-925x1440.png" },
+    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2022/04/3001_Ayunda-Risu-960x1440.png" },
+    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2024/06/bg_Kureiji-Ollie_01-925x1440.png" },
+  ];
+
+  // 9 gambar alternatif
+  const altgambar = [
+    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Moona-Hoshinova_01-925x1440.png" },
+    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Vestia-Zeta_01-925x1440.png" },
+    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/talent_name_JP_Anya-Melfissa.png" },
+    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Kobo-Kanaeru_01-925x1440.png" },
+    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Ninomae-Inanis_01.png" },
+    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2024/10/bg_Nakiri-Ayame_01-925x1440.png" },
+    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/06/bg_Sakura-Miko_01-925x1440.png" },
+    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/06/bg_Yukihana-Lamy_01-925x1440.png" },
+    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2024/06/bg_Omaru-Polka_01-925x1440.png" },
+  ];
+
+  const initialData = gambar.map((gbr, index) => ({
+    id: index,
+    gambar: gbr,
+    altgambar: altgambar[index],
+    toggled: false,
+    scale: 1,
+  }));
+
+  type GridItem = {
+    id: number;
+    gambar: { uri: string };
+    altgambar: { uri: string };
+    toggled: boolean;
+    scale: number;
+  };
+
+  const [gridData, setGridData] = useState<GridItem[]>(initialData);
+
+  const detectAI = (gambar: { uri: string }) => {
+    console.log("AI detection running on:", gambar.uri);
+    // Simulasi AI detection — bisa sambungkan API detection asli di sini
+  };
+
+  const handlePress = (index: number) => {
+    setGridData((prevData) =>
+      prevData.map((item, idx) => {
+        if (idx === index) {
+          const newScale = Math.min(item.scale * 1.2, 2);
+          const toggled = !item.toggled;
+          const newGambar = toggled ? item.altgambar : item.gambar;
+          detectAI(newGambar);
+          return {
+            ...item,
+            toggled,
+            scale: newScale,
+            gambar: newGambar,
+          };
+        }
+        return item;
+      })
+    );
+  };
+
+  const renderItem = ({ item, index }: { item: GridItem; index: number }) => (
+    <TouchableOpacity
+      style={styles.item}
+      onPress={() => handlePress(index)}
+      activeOpacity={0.8}
     >
-      {/* Segitiga */}
-      <View
-        style={{
-          width: 0,
-          height: 0,
-          borderLeftWidth: 60,
-          borderRightWidth: 60,
-          borderBottomWidth: 120,
-          borderLeftColor: "transparent",
-          borderRightColor: "transparent",
-          borderBottomColor: "#4B7BE5",
-          marginBottom: 40,
-          opacity: 0.3,
-        }}
+      <Image
+        source={item.gambar}
+        style={[
+          styles.image,
+          {
+            transform: [{ scale: item.scale }],
+          },
+        ]}
+        resizeMode="contain"
       />
+    </TouchableOpacity>
+  );
 
-      {/* Persegi panjang isi Nama */}
-      <View
-        style={{
-          backgroundColor: "#252A34",
-          paddingVertical: 25,
-          paddingHorizontal: 60,
-          borderRadius: 15,
-          marginBottom: 40,
-          elevation: 5,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.3,
-          shadowRadius: 4,
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 24,
-            fontWeight: "bold",
-            color: "#00F7FF",
-            letterSpacing: 1,
-          }}
-        >
-          Dinda Safitri
-        </Text>
-      </View>
-
-      {/* Bentuk Pil isi Stambuk */}
-      <View
-        style={{
-          backgroundColor: "#3A4750",
-          width: "100%",
-          minHeight: 70,
-          borderRadius: 55,
-          justifyContent: "center",
-          alignItems: "center",
-          elevation: 5,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.3,
-          shadowRadius: 4,
-          paddingHorizontal: 20,
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 26,
-            fontWeight: "bold",
-            color: "#FFFFFF",
-            letterSpacing: 1,
-          }}
-          numberOfLines={1}
-          adjustsFontSizeToFit={true}
-        >
-          105841109322
-        </Text>
-      </View>
+  return (
+    <View style={styles.container}>
+      <FlatList
+        data={gridData}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id.toString()}
+        numColumns={gridSize}
+        showsVerticalScrollIndicator={false}
+      />
+      <Text style={styles.note}>
+        Tap gambar → ganti alternatif + AI detection + perbesar
+      </Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: "#1e1e1e",
+  },
+  item: {
+    margin: 5,
+  },
+  image: {
+    width: imageWidth,
+    height: imageHeight,
+    borderRadius: 12,
+  },
+  note: {
+    color: "#ccc",
+    textAlign: "center",
+    padding: 10,
+    fontSize: 14,
+  },
+});
