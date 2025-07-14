@@ -70,10 +70,16 @@ export default function App() {
     setGridData((prevData) =>
       prevData.map((item, idx) => {
         if (idx === index) {
+          // Penskalaan gambar sebesar 1.2x saat diklik dengan pembatasan maksimum 2x
           const newScale = Math.min(item.scale * 1.2, 2);
+          
+          // Penggantian gambar dengan versi alternatif
           const toggled = !item.toggled;
           const newGambar = toggled ? item.altgambar : item.gambar;
+          
+          // Jalankan AI detection
           detectAI(newGambar);
+          
           return {
             ...item,
             toggled,
@@ -86,23 +92,46 @@ export default function App() {
     );
   };
 
+  // Fungsi untuk reset gambar individual (long press)
+  const resetItem = (index: number) => {
+    setGridData((prevData) =>
+      prevData.map((item, idx) => {
+        if (idx === index) {
+          return {
+            ...item,
+            toggled: false,
+            scale: 1,
+            gambar: gambar[index], // Kembali ke gambar asli
+          };
+        }
+        return item;
+      })
+    );
+  };
+
 const renderItem = ({ item, index }: { item: GridItem; index: number }) => (
   <TouchableOpacity
     style={styles.item}
     onPress={() => handlePress(index)}
+    onLongPress={() => resetItem(index)} // Long press untuk reset
     activeOpacity={0.8}
   >
-    <View style={styles.imageWrapper}>
+    <View style={[
+      styles.imageWrapper,
+      { 
+        borderColor: item.toggled ? "#ff69b4" : "#666", // Border berubah warna saat toggled
+        transform: [{ scale: item.scale }], // Scale wrapper, bukan hanya image
+      }
+    ]}>
       <Image
         source={item.gambar}
-        style={[
-          styles.image,
-          {
-            transform: [{ scale: item.scale }],
-          },
-        ]}
+        style={styles.image}
         resizeMode="contain"
       />
+      {/* Indicator skala */}
+      <View style={styles.scaleIndicator}>
+        <Text style={styles.scaleText}>{item.scale.toFixed(1)}x</Text>
+      </View>
     </View>
   </TouchableOpacity>
 );
@@ -119,7 +148,8 @@ const renderItem = ({ item, index }: { item: GridItem; index: number }) => (
         showsVerticalScrollIndicator={false}
       />
       <Text style={styles.note}>
-        Tap gambar → ganti alternatif + AI detection + perbesar
+        Tap: ganti gambar + perbesar 1.2x (max 2x) + AI detection{'\n'}
+        Long press: reset gambar & skala
       </Text>
     </View>
   );
@@ -140,11 +170,26 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     backgroundColor: "#333",
     padding: 2,
+    position: "relative",
   },
   image: {
     width: imageWidth,
     height: imageHeight,
     borderRadius: 12,
+  },
+  scaleIndicator: {
+    position: "absolute",
+    top: 5,
+    right: 5,
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  scaleText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "bold",
   },
   note: {
     color: "#ccc",
