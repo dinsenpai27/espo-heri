@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dimensions,
   FlatList,
@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import * as Font from "expo-font";
 
 // Konfigurasi grid dan ukuran gambar
 const jumlahKolom = 3;
@@ -61,6 +62,23 @@ export default function GaleriInteraktif() {
   };
 
   const [dataGaleri, setDataGaleri] = useState<ItemGaleri[]>(dataAwal);
+  const [fontLoaded, setFontLoaded] = useState(false);
+
+  // Load font saat komponen dimount
+  useEffect(() => {
+    const loadFont = async () => {
+      try {
+        await Font.loadAsync({
+          "SpaceMono-Regular": require("../assets/fonts/SpaceMono-Regular.ttf"),
+        });
+        setFontLoaded(true);
+      } catch (error) {
+        console.log("Error loading font:", error);
+        setFontLoaded(true); // Tetap lanjut meski font gagal load
+      }
+    };
+    loadFont();
+  }, []);
 
   // Fungsi simulasi AI detection
   const deteksiAI = (gambar: { uri: string }) => {
@@ -110,16 +128,24 @@ export default function GaleriInteraktif() {
 
   return (
     <View style={styles.layar}>
-      <FlatList
-        data={dataGaleri}
-        renderItem={renderGaleri}
-        keyExtractor={(item) => item.id.toString()}
-        numColumns={jumlahKolom}
-        showsVerticalScrollIndicator={false}
-      />
-      <Text style={styles.keterangan}>
-        Klik gambar → ganti versi + AI detect + perbesar max 2x
-      </Text>
+      {!fontLoaded ? (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
+      ) : (
+        <>
+          <FlatList
+            data={dataGaleri}
+            renderItem={renderGaleri}
+            keyExtractor={(item) => item.id.toString()}
+            numColumns={jumlahKolom}
+            showsVerticalScrollIndicator={false}
+          />
+          <Text style={styles.keterangan}>
+            Klik gambar → ganti versi + AI detect + perbesar max 2x
+          </Text>
+        </>
+      )}
     </View>
   );
 }
@@ -150,5 +176,17 @@ const styles = StyleSheet.create({
     textAlign: "center",
     padding: 10,
     fontSize: 14,
+    fontFamily: "SpaceMono-Regular",
+    fontWeight: "400",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    color: "#ccc",
+    fontSize: 16,
+    fontFamily: "SpaceMono-Regular",
   },
 });
