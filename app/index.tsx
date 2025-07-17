@@ -74,7 +74,7 @@ export default function GalleryApp() {
           ? {
               ...item,
               isAlt: !item.isAlt,
-              scale: Math.min(item.scale * 1.2, 2),
+            scale: Math.min(Number((item.scale * 1.2).toFixed(2)), 2),
             }
           : item
       )
