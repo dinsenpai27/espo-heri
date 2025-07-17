@@ -9,15 +9,15 @@ import {
   View,
 } from "react-native";
 
-// Atur grid dan ukuran gambar
+// Atur grid dan ukuran gambar secara responsif
 const columns = 3;
 const screenWidth = Dimensions.get("window").width;
-const imageSize = (screenWidth / columns) - 20;
+const imageSize = screenWidth / columns - 20;
 const aspectRatio = 925 / 1440;
 const imageHeight = imageSize / aspectRatio;
 
 export default function GalleryApp() {
-  // Data gambar utama
+  // Gambar utama
   const mainImages = [
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2024/10/bg_Nakiri-Ayame_01-925x1440.png" },
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/06/bg_Sakura-Miko_01-925x1440.png" },
@@ -30,7 +30,7 @@ export default function GalleryApp() {
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2024/06/bg_Kureiji-Ollie_01-925x1440.png" },
   ];
 
-  // Data gambar alternatif (jumlah wajib sama)
+  // Gambar alternatif
   const altImages = [
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Moona-Hoshinova_01-925x1440.png" },
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Vestia-Zeta_01-925x1440.png" },
@@ -43,88 +43,106 @@ export default function GalleryApp() {
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Uruha-Rushia_01-925x1440.png" },
   ];
 
-  // State data grid
-  const initialData = mainImages.map((img, index) => ({
-    id: index,
-    main: img,
-    alt: altImages[index],
-    isAlt: false,
-    scale: 1,
-  }));
+  // Validasi jumlah gambar
+  if (mainImages.length !== altImages.length) {
+    console.warn("Jumlah gambar utama dan alternatif tidak sama!");
+  }
 
+  // Tipe data untuk setiap gambar
   type GalleryItem = {
     id: number;
     main: { uri: string };
     alt: { uri: string };
     isAlt: boolean;
     scale: number;
+    error: boolean; // untuk penanganan error gambar
   };
 
-  const [galleryData, setGalleryData] = useState<GalleryItem[]>(initialData);
+  // Data awal gallery
+  const initialData: GalleryItem[] = mainImages.map((main, index) => ({
+    id: index,
+    main,
+    alt: altImages[index],
+    isAlt: false,
+    scale: 1,
+    error: false,
+  }));
 
-  // Saat gambar diklik
+  const [galleryData, setGalleryData] = useState(initialData);
+
+  // Klik gambar → toggle gambar + penskalaan
   const onImagePress = (index: number) => {
     setGalleryData((prev) =>
-      prev.map((item, i) => {
-        if (i === index) {
-          // Penskalaan individual pada setiap klik tanpa reset
-          const newScale = Math.min(item.scale * 1.2, 2); // maksimal 2x
-          
-          // Toggle gambar alternatif
-          const toggledAlt = !item.isAlt;
-          
-          return {
-            ...item,
-            isAlt: toggledAlt,
-            scale: newScale, // Scale terus bertambah tanpa reset
-          };
-        }
-        return item;
-      })
+      prev.map((item, i) =>
+        i === index
+          ? {
+              ...item,
+              isAlt: !item.isAlt,
+              scale: Math.min(item.scale * 1.2, 2),
+            }
+          : item
+      )
     );
   };
 
-  // Fungsi reset individual (long press)
+  // Long press → reset gambar & skala
   const onLongPress = (index: number) => {
     setGalleryData((prev) =>
-      prev.map((item, i) => {
-        if (i === index) {
-          return {
-            ...item,
-            isAlt: false, // Kembali ke gambar utama
-            scale: 1, // Reset scale ke 1
-          };
-        }
-        return item;
-      })
+      prev.map((item, i) =>
+        i === index
+          ? {
+              ...item,
+              isAlt: false,
+              scale: 1,
+            }
+          : item
+      )
     );
   };
 
-  // Tampilkan tiap gambar
+  // Penanganan error saat gambar gagal dimuat
+  const onImageError = (index: number) => {
+    setGalleryData((prev) =>
+      prev.map((item, i) =>
+        i === index ? { ...item, error: true } : item
+      )
+    );
+  };
+
+  // Komponen tiap item
   const renderItem = ({ item, index }: { item: GalleryItem; index: number }) => (
     <TouchableOpacity
       style={styles.card}
       onPress={() => onImagePress(index)}
-      onLongPress={() => onLongPress(index)} // Long press untuk reset
+      onLongPress={() => onLongPress(index)}
       activeOpacity={0.8}
     >
-      <View style={[
-        styles.border,
-        { 
-          borderColor: item.isAlt ? "#ff69b4" : "#666", // Border berubah warna
-          transform: [{ scale: item.scale }], // Scale keseluruhan container
-        }
-      ]}>
-        <Image
-          source={item.isAlt ? item.alt : item.main}
-          style={styles.image}
-          resizeMode="contain"
-        />
-        {/* Indikator skala */}
+      <View
+        style={[
+          styles.border,
+          {
+            borderColor: item.isAlt ? "#ff69b4" : "#666",
+            transform: [{ scale: item.scale }],
+          },
+        ]}
+      >
+        {!item.error ? (
+          <Image
+            source={item.isAlt ? item.alt : item.main}
+            style={styles.image}
+            resizeMode="contain"
+            onError={() => onImageError(index)}
+          />
+        ) : (
+          <View style={[styles.image, styles.errorImage]}>
+            <Text style={styles.errorText}>Gagal memuat gambar</Text>
+          </View>
+        )}
+        {/* Tampilkan skala */}
         <View style={styles.scaleIndicator}>
           <Text style={styles.scaleText}>{item.scale.toFixed(1)}x</Text>
         </View>
-        {/* Indikator gambar alternatif */}
+        {/* Indikator alternatif */}
         {item.isAlt && (
           <View style={styles.altIndicator}>
             <Text style={styles.altText}>ALT</Text>
@@ -144,7 +162,7 @@ export default function GalleryApp() {
         showsVerticalScrollIndicator={false}
       />
       <Text style={styles.note}>
-        Tap: toggle gambar + perbesar 1.2x individual (max 2x){'\n'}
+        Tap: toggle gambar + perbesar 1.2x individual (max 2x){"\n"}
         Long press: reset gambar & skala ke awal
       </Text>
     </View>
@@ -162,7 +180,6 @@ const styles = StyleSheet.create({
   },
   border: {
     borderWidth: 4,
-    borderColor: "#ff69b4",
     borderRadius: 14,
     backgroundColor: "#333",
     padding: 2,
@@ -206,5 +223,15 @@ const styles = StyleSheet.create({
     textAlign: "center",
     padding: 10,
     fontSize: 14,
+  },
+  errorImage: {
+    backgroundColor: "#444",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    color: "#ff6666",
+    fontSize: 10,
+    textAlign: "center",
   },
 });
