@@ -18,28 +18,28 @@ const imageHeight = imageSize / aspectRatio;
 export default function GalleryApp() {
   // Gambar utama (lokal)
   const mainImages = [
-    require("./assets/images/a01.png"),
-    require("./assets/images/a02.png"),
-    require("./assets/images/a03.png"),
-    require("./assets/images/a04.png"),
-    require("./assets/images/a05.png"),
-    require("./assets/images/a06.png"),
-    require("./assets/images/a07.png"),
-    require("./assets/images/a08.png"),
-    require("./assets/images/a09.png"),
+    require("../assets/images/a01.png"),
+    require("../assets/images/a02.png"),
+    require("../assets/images/a03.png"),
+    require("../assets/images/a04.png"),
+    require("../assets/images/a05.png"),
+    require("../assets/images/a06.png"),
+    require("../assets/images/a07.png"),
+    require("../assets/images/a08.png"),
+    require("../assets/images/a09.png"),
   ];
 
   // Gambar alternatif (lokal)
   const altImages = [
-    require("./assets/images/a10.png"),
-    require("./assets/images/a11.png"),
-    require("./assets/images/a12.png"),
-    require("./assets/images/a13.png"),
-    require("./assets/images/a14.png"),
-    require("./assets/images/a15.png"),
-    require("./assets/images/a16.png"),
-    require("./assets/images/a17.png"),
-    require("./assets/images/a18.png"),
+    require("../assets/images/a10.png"),
+    require("../assets/images/a11.png"),
+    require("../assets/images/a12.png"),
+    require("../assets/images/a13.png"),
+    require("../assets/images/a14.png"),
+    require("../assets/images/a15.png"),
+    require("../assets/images/a16.png"),
+    require("../assets/images/a17.png"),
+    require("../assets/images/a18.png"),
   ];
 
   // Validasi panjang
@@ -114,12 +114,12 @@ export default function GalleryApp() {
         {!item.error ? (
           <Image
             source={item.isAlt ? item.alt : item.main}
-            style={styles.image}
+            style={imageStyle}
             resizeMode="contain"
             onError={() => onImageError(index)}
           />
         ) : (
-          <View style={[styles.image, styles.errorImage]}>
+          <View style={[imageStyle, styles.errorImage]}>
             <Text style={styles.errorText}>Image Failed</Text>
           </View>
         )}
@@ -170,11 +170,6 @@ const styles = StyleSheet.create({
     padding: 2,
     position: "relative",
   },
-  image: {
-    width: imageSize,
-    height: imageHeight,
-    borderRadius: 12,
-  },
   scaleIndicator: {
     position: "absolute",
     top: 5,
@@ -220,3 +215,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
+
+// Dynamic style for image
+const imageStyle = {
+  width: imageSize,
+  height: imageHeight,
+  borderRadius: 12,
+};
