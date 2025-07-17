@@ -9,7 +9,6 @@ import {
   View,
 } from "react-native";
 
-// Define grid size
 const columns = 3;
 const screenWidth = Dimensions.get("window").width;
 const imageSize = screenWidth / columns - 20;
@@ -17,48 +16,46 @@ const aspectRatio = 925 / 1440;
 const imageHeight = imageSize / aspectRatio;
 
 export default function GalleryApp() {
-  // Main image list
+  // Gambar utama (lokal)
   const mainImages = [
-    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2024/10/bg_Nakiri-Ayame_01-925x1440.png" },
-    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/06/bg_Sakura-Miko_01-925x1440.png" },
-    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/06/bg_Shirogane-Noel_01-925x1440.png" },
-    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/06/bg_Amane-Kanata_01-925x1440.png" },
-    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/06/bg_Yukihana-Lamy_01-925x1440.png" },
-    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2024/06/bg_Omaru-Polka_01-925x1440.png" },
-    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Sakamata-Chloe_01-925x1440.png" },
-    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2022/04/3001_Ayunda-Risu-960x1440.png" },
-    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2024/06/bg_Kureiji-Ollie_01-925x1440.png" },
+    require("./assets/images/a01.png"),
+    require("./assets/images/a02.png"),
+    require("./assets/images/a03.png"),
+    require("./assets/images/a04.png"),
+    require("./assets/images/a05.png"),
+    require("./assets/images/a06.png"),
+    require("./assets/images/a07.png"),
+    require("./assets/images/a08.png"),
+    require("./assets/images/a09.png"),
   ];
 
-  // Alternate images (must match mainImages in length)
+  // Gambar alternatif (lokal)
   const altImages = [
-    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Moona-Hoshinova_01-925x1440.png" },
-    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Vestia-Zeta_01-925x1440.png" },
-    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/talent_name_JP_Anya-Melfissa.png" },
-    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Kobo-Kanaeru_01-925x1440.png" },
-    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Ninomae-Inanis_01.png" },
-    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Tokoyami-Towa_01-925x1440.png" },
-    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/06/bg_Hoshimachi-Suisei_01-925x1440.png" },
-    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Azki_01-925x1440.png" },
-    { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Uruha-Rushia_01-925x1440.png" },
+    require("./assets/images/a10.png"),
+    require("./assets/images/a11.png"),
+    require("./assets/images/a12.png"),
+    require("./assets/images/a13.png"),
+    require("./assets/images/a14.png"),
+    require("./assets/images/a15.png"),
+    require("./assets/images/a16.png"),
+    require("./assets/images/a17.png"),
+    require("./assets/images/a18.png"),
   ];
 
-  // Validate equal length
+  // Validasi panjang
   if (mainImages.length !== altImages.length) {
-    console.warn("Image data is not complete!");
+    console.warn("Jumlah gambar tidak cocok!");
   }
 
-  // Each item in gallery
   type GalleryItem = {
     id: number;
-    main: { uri: string };
-    alt: { uri: string };
+    main: any;
+    alt: any;
     isAlt: boolean;
     scale: number;
     error: boolean;
   };
 
-  // Initial gallery data state
   const [galleryData, setGalleryData] = useState<GalleryItem[]>(
     mainImages.map((main, index) => ({
       id: index,
@@ -70,7 +67,6 @@ export default function GalleryApp() {
     }))
   );
 
-  // Called when image is tapped
   const onImagePress = (index: number) => {
     setGalleryData((prev) =>
       prev.map((item, i) =>
@@ -85,18 +81,14 @@ export default function GalleryApp() {
     );
   };
 
-  // Called when image is long-pressed (reset)
   const onLongPress = (index: number) => {
     setGalleryData((prev) =>
       prev.map((item, i) =>
-        i === index
-          ? { ...item, isAlt: false, scale: 1 }
-          : item
+        i === index ? { ...item, isAlt: false, scale: 1 } : item
       )
     );
   };
 
-  // Called if image fails to load
   const onImageError = (index: number) => {
     setGalleryData((prev) =>
       prev.map((item, i) =>
@@ -105,7 +97,6 @@ export default function GalleryApp() {
     );
   };
 
-  // Render each grid item
   const renderItem = ({ item, index }: { item: GalleryItem; index: number }) => (
     <TouchableOpacity
       style={styles.card}
@@ -133,12 +124,10 @@ export default function GalleryApp() {
           </View>
         )}
 
-        {/* Show scale info */}
         <View style={styles.scaleIndicator}>
           <Text style={styles.scaleText}>{item.scale.toFixed(1)}x</Text>
         </View>
 
-        {/* ALT tag */}
         {item.isAlt && (
           <View style={styles.altIndicator}>
             <Text style={styles.altText}>ALT</Text>
@@ -165,7 +154,6 @@ export default function GalleryApp() {
   );
 }
 
-// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
