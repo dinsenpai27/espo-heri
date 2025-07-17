@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 
-// Atur grid dan ukuran gambar secara responsif
+// Define grid size
 const columns = 3;
 const screenWidth = Dimensions.get("window").width;
 const imageSize = screenWidth / columns - 20;
@@ -17,7 +17,7 @@ const aspectRatio = 925 / 1440;
 const imageHeight = imageSize / aspectRatio;
 
 export default function GalleryApp() {
-  // Gambar utama
+  // Main image list
   const mainImages = [
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2024/10/bg_Nakiri-Ayame_01-925x1440.png" },
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/06/bg_Sakura-Miko_01-925x1440.png" },
@@ -30,7 +30,7 @@ export default function GalleryApp() {
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2024/06/bg_Kureiji-Ollie_01-925x1440.png" },
   ];
 
-  // Gambar alternatif
+  // Alternate images (must match mainImages in length)
   const altImages = [
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Moona-Hoshinova_01-925x1440.png" },
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Vestia-Zeta_01-925x1440.png" },
@@ -43,34 +43,34 @@ export default function GalleryApp() {
     { uri: "https://hololive.hololivepro.com/wp-content/uploads/2020/07/bg_Uruha-Rushia_01-925x1440.png" },
   ];
 
-  // Validasi jumlah gambar
+  // Validate equal length
   if (mainImages.length !== altImages.length) {
-    console.warn("Jumlah gambar utama dan alternatif tidak sama!");
+    console.warn("Image data is not complete!");
   }
 
-  // Tipe data untuk setiap gambar
+  // Each item in gallery
   type GalleryItem = {
     id: number;
     main: { uri: string };
     alt: { uri: string };
     isAlt: boolean;
     scale: number;
-    error: boolean; // untuk penanganan error gambar
+    error: boolean;
   };
 
-  // Data awal gallery
-  const initialData: GalleryItem[] = mainImages.map((main, index) => ({
-    id: index,
-    main,
-    alt: altImages[index],
-    isAlt: false,
-    scale: 1,
-    error: false,
-  }));
+  // Initial gallery data state
+  const [galleryData, setGalleryData] = useState<GalleryItem[]>(
+    mainImages.map((main, index) => ({
+      id: index,
+      main,
+      alt: altImages[index],
+      isAlt: false,
+      scale: 1,
+      error: false,
+    }))
+  );
 
-  const [galleryData, setGalleryData] = useState(initialData);
-
-  // Klik gambar → toggle gambar + penskalaan
+  // Called when image is tapped
   const onImagePress = (index: number) => {
     setGalleryData((prev) =>
       prev.map((item, i) =>
@@ -85,22 +85,18 @@ export default function GalleryApp() {
     );
   };
 
-  // Long press → reset gambar & skala
+  // Called when image is long-pressed (reset)
   const onLongPress = (index: number) => {
     setGalleryData((prev) =>
       prev.map((item, i) =>
         i === index
-          ? {
-              ...item,
-              isAlt: false,
-              scale: 1,
-            }
+          ? { ...item, isAlt: false, scale: 1 }
           : item
       )
     );
   };
 
-  // Penanganan error saat gambar gagal dimuat
+  // Called if image fails to load
   const onImageError = (index: number) => {
     setGalleryData((prev) =>
       prev.map((item, i) =>
@@ -109,7 +105,7 @@ export default function GalleryApp() {
     );
   };
 
-  // Komponen tiap item
+  // Render each grid item
   const renderItem = ({ item, index }: { item: GalleryItem; index: number }) => (
     <TouchableOpacity
       style={styles.card}
@@ -117,15 +113,13 @@ export default function GalleryApp() {
       onLongPress={() => onLongPress(index)}
       activeOpacity={0.8}
     >
-      <View
-        style={[
-          styles.border,
-          {
-            borderColor: item.isAlt ? "#ff69b4" : "#666",
-            transform: [{ scale: item.scale }],
-          },
-        ]}
-      >
+      <View style={[
+        styles.border,
+        {
+          borderColor: item.isAlt ? "#ff69b4" : "#666",
+          transform: [{ scale: item.scale }],
+        },
+      ]}>
         {!item.error ? (
           <Image
             source={item.isAlt ? item.alt : item.main}
@@ -135,14 +129,16 @@ export default function GalleryApp() {
           />
         ) : (
           <View style={[styles.image, styles.errorImage]}>
-            <Text style={styles.errorText}>Gagal memuat gambar</Text>
+            <Text style={styles.errorText}>Image Failed</Text>
           </View>
         )}
-        {/* Tampilkan skala */}
+
+        {/* Show scale info */}
         <View style={styles.scaleIndicator}>
           <Text style={styles.scaleText}>{item.scale.toFixed(1)}x</Text>
         </View>
-        {/* Indikator alternatif */}
+
+        {/* ALT tag */}
         {item.isAlt && (
           <View style={styles.altIndicator}>
             <Text style={styles.altText}>ALT</Text>
@@ -162,13 +158,14 @@ export default function GalleryApp() {
         showsVerticalScrollIndicator={false}
       />
       <Text style={styles.note}>
-        Tap: toggle gambar + perbesar 1.2x individual (max 2x){"\n"}
-        Long press: reset gambar & skala ke awal
+        Tap: switch image + scale up (max 2x){"\n"}
+        Long press: reset image and scale
       </Text>
     </View>
   );
 }
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
