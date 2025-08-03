@@ -224,121 +224,104 @@
 // };
 
 
+//tugas 6
+import {
+  AntDesign,
+  Entypo,
+  FontAwesome,
+  Ionicons,
+  MaterialIcons
+} from '@expo/vector-icons';
+import React from 'react';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
-import { AntDesign } from "@expo/vector-icons";
-import React from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+// Definisikan tipe untuk data ikon kita agar lebih aman dengan TypeScript
+type IconData = {
+  name: any; // 'name' bisa bervariasi tipenya, jadi 'any' cukup fleksibel di sini
+  family: React.ComponentType<any>; // Tipe untuk komponen React
+  label: string;
+};
 
-const mahasiswa = [
-  { nama: "LEHA", stambuk: "105841109222" },
-  { nama: "YANI", stambuk: "105841107922" },
-  { nama: "FAUZAN", stambuk: "105841109622" },
-  { nama: "DINDA", stambuk: "105841109322" },
-  { nama: "RADIN", stambuk: "105841107722" },
-  { nama: "DAYANG", stambuk: "105841109822" },
-  { nama: "SABAN", stambuk: "10584111022" },
-  { nama: "FAREL", stambuk: "105841109422" },
-  { nama: "ANNAS", stambuk: "105841109022" },
-  { nama: "FADHIL", stambuk: "105841109722" },
+// Buat array data untuk 10 ikon yang akan ditampilkan
+// Kita akan mencampur ikon dari keluarga yang berbeda
+const icons: IconData[] = [
+  { name: 'home', family: MaterialIcons, label: 'Home' },
+  { name: 'settings', family: Ionicons, label: 'Settings' },
+  { name: 'user', family: FontAwesome, label: 'Profile' },
+  { name: 'shopping-cart', family: MaterialIcons, label: 'Cart' },
+  { name: 'camera', family: Entypo, label: 'Camera' },
+  { name: 'heart', family: AntDesign, label: 'Likes' },
+  { name: 'mail', family: Ionicons, label: 'Inbox' },
+  { name: 'search', family: FontAwesome, label: 'Search' },
+  { name: 'lock', family: Entypo, label: 'Security' },
+  { name: 'pie-chart', family: AntDesign, label: 'Stats' },
 ];
 
-
-// buat salinan data lalu diurutkan berdasarkan stambuk
-const urutanData = [...mahasiswa].sort((a, b) =>
-  a.stambuk.localeCompare(b.stambuk)
-);
-
-// daftar font untuk ditampilkan
-const daftarFont = [
-  "Lato-Regular",
-  "Lato-Bold",
-  "Roboto-Regular",
-  "Roboto-Bold",
-  "Merriweather-Regular",
-  "Inter-Variable",
-  "Raleway-Variable",
-  "Nunito-Variable",
-  "Mulish-Variable",
-  "Manrope-Variable",
-];
-
-export default function DaftarNama() {
-  const ambangStambuk = 105841109000;
-
-  // pisahkan berdasarkan ambang batas stambuk
-  const kelompokRendah = urutanData.filter(
-    ({ stambuk }) => parseInt(stambuk) < ambangStambuk
-  );
-  const kelompokTinggi = urutanData.filter(
-    ({ stambuk }) => parseInt(stambuk) >= ambangStambuk
-  );
-
-  // fungsi render item dengan font berbeda
-  const renderNama = (item: { nama: string; stambuk: string }, index: number) => (
-    <Text
-      style={[
-        gaya.teksItem,
-        { fontFamily: daftarFont[index % daftarFont.length] },
-      ]}
-    >
-      {item.nama} — {item.stambuk}
-    </Text>
-  );
-
+export default function App() {
   return (
-    <View style={gaya.latar}>
-      <Text style={gaya.judul}>📋 Daftar Nama Stambuk</Text>
-
-      <Text style={gaya.subJudul}>Stambuk Rendah</Text>
-      <FlatList
-        data={kelompokRendah}
-        keyExtractor={(mhs) => mhs.stambuk}
-        renderItem={({ item, index }) => renderNama(item, index)}
-      />
-
-      <Text style={gaya.subJudul}>Stambuk Tinggi</Text>
-      <FlatList
-        data={kelompokTinggi}
-        keyExtractor={(mhs) => mhs.stambuk}
-        renderItem={({ item, index }) =>
-          renderNama(item, index + kelompokRendah.length)
-        }
-      />
-
-      <View style={gaya.barisIkon}>
-        <AntDesign name="sound" size={30} color="#c00" />
-        <AntDesign name="clockcircleo" size={30} color="#222" />
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Galeri 10 Ikon</Text>
+        <View style={styles.iconGrid}>
+          {icons.map((icon, index) => {
+            // Kita gunakan 'as' untuk menunjuk komponen dinamis
+            const IconComponent = icon.family; 
+            return (
+              <View key={index} style={styles.iconContainer}>
+                <IconComponent name={icon.name} size={40} color="#333" />
+                <Text style={styles.iconLabel}>{icon.label}</Text>
+              </View>
+            );
+          })}
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
-const gaya = StyleSheet.create({
-  latar: {
+const styles = StyleSheet.create({
+  safeArea: {
     flex: 1,
-    backgroundColor: "#eef2f7",
-    justifyContent: "center",
-    padding: 20,
+    backgroundColor: '#f0f0f0',
   },
-  judul: {
-    fontSize: 24,
-    fontFamily: "Lato-Bold",
-    textAlign: "center",
-    marginBottom: 18,
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
   },
-  subJudul: {
-    fontSize: 19,
-    fontFamily: "Roboto-Bold",
-    marginVertical: 12,
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 24,
+    color: '#1a1a1a',
   },
-  teksItem: {
-    fontSize: 16,
-    marginVertical: 4,
-    textAlign: "left",
+  iconGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  barisIkon: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    marginTop: 25,
+  iconContainer: {
+    width: 100,
+    height: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 8,
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  iconLabel: {
+    marginTop: 8,
+    fontSize: 12,
+    color: '#555',
   },
 });
