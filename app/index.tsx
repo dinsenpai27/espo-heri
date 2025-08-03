@@ -222,9 +222,12 @@
 //   height: imageHeight,
 //   borderRadius: 12,
 // };
-import React from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+
+
+
 import { AntDesign } from "@expo/vector-icons";
+import React from "react";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 
 const mahasiswa = [
   { nama: "LEHA", stambuk: "105841109222" },
